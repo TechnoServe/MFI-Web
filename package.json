@@ -1,0 +1,38 @@
+{
+  "name": "mfi",
+  "version": "1.0.0",
+  "description": "",
+  "main": "functions/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "serve": "cross-env NODE_ENV=production firebase serve",
+    "deploy": "firebase deploy",
+    "debug:deploy": "firebase --debug deploy",
+    "format": "prettier --write \"(frontend|functions)/**/*.(js|jsx|json)\"",
+    "lint": "npm run lint:frontend && npm run lint:functions",
+    "lint:frontend": "cd frontend && npm run lint",
+    "lint:functions": "cd functions && npm run lint",
+    "husky:install": "husky install",
+    "postinstall": "npm run husky:install",
+    "pre-commit": "npm run lint",
+    "pull:deploy": "git pull origin develop && npm run deploy"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/enterfive/MFI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/enterfive/MFI/issues"
+  },
+  "homepage": "https://github.com/enterfive/MFI#readme",
+  "devDependencies": {
+    "husky": "^6.0.0",
+    "prettier": "^2.3.1",
+    "pretty-quick": "^3.1.0"
+  },
+  "dependencies": {
+    "cross-env": "^7.0.3"
+  }
+}
