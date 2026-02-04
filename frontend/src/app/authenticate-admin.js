@@ -15,15 +15,15 @@ const AuthenticatedAdmin = () => {
   return (
     <BrowserRouter>
       <Switch>
-        // Provides search context for components within admin routes
+        {/* // Provides search context for components within admin routes */}
         <SearchProvider>
-          // Protected admin route that renders the sidebar layout
+          {/* // Protected admin route that renders the sidebar layout */}
           <Route path={ADMIN}>
             <SideBar />
           </Route>
         </SearchProvider>
 
-        // Redirects all unknown paths to the admin route
+        {/* // Redirects all unknown paths to the admin route */}
         <Redirect from="/*" to={ADMIN} />
       </Switch>
     </BrowserRouter>

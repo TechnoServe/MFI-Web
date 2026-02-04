@@ -839,6 +839,45 @@ module.exports.getBrands = (store) => async (req, res) => {
   }
 };
 
+module.exports.getBrandsAdmin = (store) => async (req, res) => {
+  try {
+    /**
+     * Validation constraints for company-related operations.
+     * 
+     * @typedef {Object} Constraints
+     * @property {Object} company-id - Constraint for the company ID.
+     * @property {string} company-id.type - The expected data type for the company ID.
+     * @property {Object} company-id.presence - Presence validation rule.
+     * @property {boolean} company-id.presence.allowEmpty - Whether empty values are allowed.
+     */
+    const constraints = {
+      'company-id': {
+        type: 'string',
+        presence: { allowEmpty: false },
+      },
+    };
+
+    const errors = validate(req.query, constraints);
+
+    if (errors) return res.status(400).json({ errors });
+
+    const company = await store.getCompanyById(req.query['company-id']);
+
+    if (!guards.isCompanyMember(store, req.user, company)) {
+      return res.status(403).json({ message: 'You are not allowed to get company brands.' });
+    }
+
+    return res.json({
+      data: await store.getCompanyBrandsAdmin(req.query['company-id']),
+      message: 'Brands fetched successfully.',
+    });
+  } catch (error) {
+    const message = 'Failed to fetch company brands.';
+    console.error(message, error);
+    return res.status(500).json({ message });
+  }
+};
+
 /**
  * Updates, creates, or deletes brands for a company after admin authorization.
  * @param {Object} store - Data access layer.
@@ -893,6 +932,7 @@ module.exports.updateBrands = (store) => async (req, res) => {
         id: brand['id'],
         name: brand['name'],
         product_type: brand['product-type'],
+        active: brand['active'],
       }));
 
       await store.updateCompanyBrand(company.id, brands);

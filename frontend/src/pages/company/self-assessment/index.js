@@ -162,66 +162,66 @@ const selfAssessment = ({showSideBar}) => {
     >
       <h1>Sorry SAT has been locked!</h1>
     </Flex>
-  ) : 
+  ) :
   // Render loading spinner while fetching data
-  loading ? (
-    <Flex
-      height="100%"
-      width="100%"
-      justifyContent="center"
-      alignItems="center
+    loading ? (
+      <Flex
+        height="100%"
+        width="100%"
+        justifyContent="center"
+        alignItems="center
     "
-    >
-      <Spinner />
-    </Flex>
-  ) : 
-  // Render main Tabs UI when company tier is available
-  companyDetails?.tier ? (
-    <>
-      <Tabs
-        progress={progress}
-        showSideBar={showSideBar}
-        activeTab={activeTab}
-        companyDetails={companyDetails}
-        setActiveTab={setActiveTab}
-        finish={finish}
-        setFinish={(val) => setFinish(val)}
-        selectedSubCat={selectedSubCat}
-        setSelectedSubCat={(val) => setSelectedSubCat(val)}
       >
-        {categories.map(({component: Comp, name, icon2, icon1, id, children, cycle}) => (
-          <TabPane
-            name={name}
-            categoryId={id}
-            icon1={icon1}
-            icon2={icon2}
-            key={nanoid()}
-            subCategories={children}
+        <Spinner />
+      </Flex>
+    ) :
+    // Render main Tabs UI when company tier is available
+      companyDetails?.tier ? (
+        <>
+          <Tabs
+            progress={progress}
+            showSideBar={showSideBar}
+            activeTab={activeTab}
+            companyDetails={companyDetails}
+            setActiveTab={setActiveTab}
+            finish={finish}
+            setFinish={(val) => setFinish(val)}
+            selectedSubCat={selectedSubCat}
+            setSelectedSubCat={(val) => setSelectedSubCat(val)}
           >
-            <Comp
-              cycle={cycle}
-              name={name}
-              companyDetails={companyDetails}
-              categoryId={id}
-              finish={finish}
-              setFinish={(val) => setFinish(val)}
-              selectedSubCat={selectedSubCat}
-              subCategories={children}
-              setSelectedSubCat={(val) => setSelectedSubCat(val)}
-            />
-          </TabPane>
-        ))}
-      </Tabs>
+            {categories.map(({component: Comp, name, icon2, icon1, id, children, cycle}) => (
+              <TabPane
+                name={name}
+                categoryId={id}
+                icon1={icon1}
+                icon2={icon2}
+                key={nanoid()}
+                subCategories={children}
+              >
+                <Comp
+                  cycle={cycle}
+                  name={name}
+                  companyDetails={companyDetails}
+                  categoryId={id}
+                  finish={finish}
+                  setFinish={(val) => setFinish(val)}
+                  selectedSubCat={selectedSubCat}
+                  subCategories={children}
+                  setSelectedSubCat={(val) => setSelectedSubCat(val)}
+                />
+              </TabPane>
+            ))}
+          </Tabs>
 
-      {/* <UploadFileModal /> */}
-    </>
-  ) : 
-  // Render fallback/empty tab if company tier is not set
-  (
-    <Flex flex="1" minHeight="90vh" className="padding-0 background-color-white">
-      <EmptyTab progress={null} getCompanyDetails={getCompanyDetails} />
-    </Flex>
-  );
+          {/* <UploadFileModal /> */}
+        </>
+      ) :
+      // Render fallback/empty tab if company tier is not set
+          (
+            <Flex flex="1" minHeight="90vh" className="padding-0 background-color-white">
+              <EmptyTab progress={null} getCompanyDetails={getCompanyDetails} />
+            </Flex>
+          );
 };
 
 export default selfAssessment;

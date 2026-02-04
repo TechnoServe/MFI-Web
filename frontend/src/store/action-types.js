@@ -13,10 +13,10 @@ export const authLogout = createAction('auth/logout');
  * Action creator to log in a user and store user/token info.
  *
  * @param {Object} user - The authenticated user object
- * @param {string} token - JWT token string
+ * @param {string} [token] - Optional legacy JWT token string (Firebase ID token is injected per-request by axios)
  * @returns {Object} Redux action with user and token in payload
  */
-export const authLogin = createAction('auth/login', (user, token) => {
+export const authLogin = createAction('auth/login', (user, token = null) => {
   // Prepare action payload with user and token
   // TODO: Add user to local storage first
   return {

@@ -39,7 +39,6 @@ import moment from 'moment';
 import {nanoid} from '@reduxjs/toolkit';
 
 
-
 /**
  * Displays the product testing scores for a selected brand and allows adding new test results.
  *
@@ -283,40 +282,7 @@ const ProductModalHeader = ({productTest, uniqueBrands, cycle}) => {
                       {uniqueBrands.productTests.map((brand) => (
                         <>
                           <Container bgColor="#FAFAFA" height="10rem" p="1rem" my=".75rem">
-                            <div
-                              data-w-id="96da7984-2260-4962-0d48-c3b889abade4"
-                              className={`background-color-white border-1px padding-top-4 box-shadow-large rounded-large width-80 remove-dropdown ${show ? '' : 'hide'
-                              }`}
-                            >
-                              <h6 className="padding-left-4">Are you sure?</h6>
-                              <div className="text-small margin-bottom-4 padding-left-4">This data cannot be recovered</div>
-                              <div className="flex-row flex-space-between">
-                                <div className="padding-y-3 padding-x-4 flex-justify-end background-secondary">
-                                  <a
-                                    onClick={() => setShow(!show)}
-                                    className="button-primary button-small w-button"
-                                  >
-                                      Cancel
-                                  </a>
-                                </div>
-                                <div className="padding-y-3 padding-x-4 flex-justify-end background-secondary">
-                                  {loading? (
-                                    <Loader />
-                                  ) : (
-                                    <a
-                                      onClick={(event) => {
-                                        event.preventDefault();
-                                        deleteMicronutrientScore(brand.id, brand.results[0].id);
-                                      }}
-                                      href="#!"
-                                      className="button-danger button-small w-button"
-                                    >
-                                        Confirm remove
-                                    </a>
-                                  )}
-                                </div>
-                              </div>
-                            </div>
+
                             <Flex alignItems="center">
                               <Text fontFamily="DM Sans" fontSize="1rem" fontWeight="500" color="#1E1F24">
 
@@ -373,6 +339,41 @@ const ProductModalHeader = ({productTest, uniqueBrands, cycle}) => {
                               ))}
                               <Spacer />
                             </Flex>
+                            <div
+                              style={{top: '0', left: '0'}}
+                              data-w-id="96da7984-2260-4962-0d48-c3b889abade4"
+                              className={`background-color-white border-1px padding-top-4 box-shadow-large rounded-large width-80 remove-dropdown ${show ? '' : 'hide'
+                              }`}
+                            >
+                              <h6 className="padding-left-4">Are you sure?</h6>
+                              <div className="text-small margin-bottom-4 padding-left-4">This data cannot be recovered</div>
+                              <div className="flex-row flex-space-between">
+                                <div className="padding-y-3 padding-x-4 flex-justify-end background-secondary">
+                                  <a
+                                    onClick={() => setShow(!show)}
+                                    className="button-primary button-small w-button"
+                                  >
+                                    Cancel
+                                  </a>
+                                </div>
+                                <div className="padding-y-3 padding-x-4 flex-justify-end background-secondary">
+                                  {loading ? (
+                                    <Loader />
+                                  ) : (
+                                    <a
+                                      onClick={(event) => {
+                                        event.preventDefault();
+                                        deleteMicronutrientScore(brand.id, brand.results[0].id);
+                                      }}
+                                      href="#!"
+                                      className="button-danger button-small w-button"
+                                    >
+                                      Confirm remove
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            </div>
                           </Container>
 
                         </>

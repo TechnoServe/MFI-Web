@@ -1,5 +1,4 @@
 import {authLogin, authSetUser, fetchAuthUserThunk, authLogout} from 'store/action-types';
-import jwt from 'jwt-decode';
 
 /**
  * Authentication reducer function that handles login, logout,
@@ -12,15 +11,23 @@ import jwt from 'jwt-decode';
 function r(state = {authenticated: false}, action) {
   switch (action.type) {
     // Handle login: store token and user info in sessionStorage
-    case authLogin.type:
-      sessionStorage.setItem('auth-token', action.payload.token);
-      sessionStorage.setItem('auth-user', JSON.stringify(action.payload.user));
+    case authLogin.type: {
+      // Backward-compatible: some legacy flows still provide a token.
+      // With Firebase Auth, the API token is obtained from `auth.currentUser.getIdToken()`
+      // and injected by the axios interceptor (not stored here).
+      if (action.payload?.token) {
+        sessionStorage.setItem('auth-token', action.payload.token);
+      }
+      if (action.payload?.user) {
+        sessionStorage.setItem('auth-user', JSON.stringify(action.payload.user));
+      }
       return {
         ...state,
         authenticated: true,
-        user: action.payload.user,
-        token: action.payload.token,
+        user: action.payload?.user,
+        token: action.payload?.token,
       };
+    }
     // Handle logout: remove token and user info from sessionStorage
     case authLogout.type:
       sessionStorage.removeItem('auth-token');
@@ -39,24 +46,46 @@ function r(state = {authenticated: false}, action) {
       };
 
     // Default case: check for token in sessionStorage to restore session
-    default:
+    default: {
       const token = sessionStorage.getItem('auth-token');
-      const user = sessionStorage.getItem('auth-user');
-      if (token) {
-        const decoded = jwt(token);
-        // Ensure token hasn't expired before restoring authentication state
-        if (new Date() < new Date(decoded.exp * 1000)) {
+      const userStr = sessionStorage.getItem('auth-user');
+
+      // If we have a stored user, we can restore authenticated UI state.
+      // The real API auth token is injected by axios (Firebase ID token) at request time.
+      if (userStr) {
+        // Best-effort: if a legacy token exists and looks like a JWT, try to ensure it isn't expired.
+        if (token && token.split('.').length === 3) {
+          try {
+            const payload = JSON.parse(atob(token.split('.')[1].replace(/-/g, '+').replace(/_/g, '/')));
+            if (payload?.exp && new Date() >= new Date(payload.exp * 1000)) {
+              return state;
+            }
+          } catch (e) {
+            // Ignore decode errors and fall back to restoring from user.
+          }
+        }
+
+        try {
           return {
             ...state,
             authenticated: true,
-            user: JSON.parse(user),
+            user: JSON.parse(userStr),
           };
-        } else {
+        } catch (e) {
           return state;
         }
-      } else {
-        return state;
       }
+
+      // Legacy fallback: token exists but no user stored
+      if (token) {
+        return {
+          ...state,
+          authenticated: true,
+        };
+      }
+
+      return state;
+    }
   }
 }
 

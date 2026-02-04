@@ -19,14 +19,14 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/TechnoServe/MFI-Web.git"
+    "url": "git+https://github.com/enterfive/MFI.git"
   },
   "author": "",
   "license": "ISC",
   "bugs": {
-    "url": "https://github.com/TechnoServe/MFI-Web/issues"
+    "url": "https://github.com/enterfive/MFI/issues"
   },
-  "homepage": "https://github.com/TechnoServe/MFI-Web#readme",
+  "homepage": "https://github.com/enterfive/MFI#readme",
   "devDependencies": {
     "husky": "^6.0.0",
     "prettier": "^2.3.1",

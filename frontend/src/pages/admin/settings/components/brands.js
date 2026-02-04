@@ -1,5 +1,5 @@
 import React, {useEffect, useState} from 'react';
-import {Stack, Text, CloseButton, Flex, useToast, Spinner} from '@chakra-ui/react';
+import {Stack, Text, CloseButton, Flex, useToast, Spinner, Switch} from '@chakra-ui/react';
 // import {nanoid} from '@reduxjs/toolkit';
 import {request} from 'common';
 import PropTypes from 'prop-types';
@@ -21,6 +21,7 @@ const Brands = ({companyId}) => {
     {
       'name': '',
       'product-type': '',
+      'active': true
     },
   ]);
   // Toggle visibility of delete confirmation modal
@@ -36,7 +37,8 @@ const Brands = ({companyId}) => {
       product_type: '',
       created_at: '',
       company_id: '',
-      name: ''
+      name: '',
+      active: true
     }
   ]);
   // Flag for loading spinner while fetching data
@@ -64,6 +66,7 @@ const Brands = ({companyId}) => {
       {
         'name': '',
         'product-type': '',
+        'active': true
       },
     ]);
   };
@@ -85,7 +88,7 @@ const Brands = ({companyId}) => {
     setLoading(true);
     const fetchBrandList = () => {
       return request(true)
-        .get(`company/brands?company-id=${companyId}`)
+        .get(`admin/brands-admin?company-id=${companyId}`)
         .then((resp) => {
           setBrandList(resp.data.data);
           setLoading(false);
@@ -123,7 +126,8 @@ const Brands = ({companyId}) => {
           return {
             'id': x.id,
             'name': x.name,
-            'product-type': x.product_type
+            'product-type': x.product_type,
+            'active': x.active
           };
         })
       };
@@ -217,9 +221,23 @@ const Brands = ({companyId}) => {
             brandList?.map((x, i) =>
               <Stack key={i}>
                 <Flex mb={5}>
+                  <Stack mr={2}>
+                    <Switch alignSelf="center" colorScheme="green" defaultChecked={x.active} onChange={(e) => {
+                      const active = e.target.checked;
+                      setBrandList((currentBrand) =>
+                        currentBrand.map((cur) =>
+                          cur.id === x.id
+                            ? {
+                                ...cur,
+                                active
+                              } : cur
+                        )
+                      );
+                    }
+                    } />
+                  </Stack>
                   <Stack mr={3}>
 
-                    {/* Input field for brand name or dropdown for food vehicle */}
                     <label htmlFor="name" className="form-label">
                       Brand {i + 1} name
                     </label>
@@ -243,7 +261,6 @@ const Brands = ({companyId}) => {
                     />
                   </Stack>
                   <Stack mr={1}>
-                    {/* Input field for brand name or dropdown for food vehicle */}
                     <label htmlFor="name" className="form-label">
                       Food Vehicle
                     </label>
@@ -298,7 +315,6 @@ const Brands = ({companyId}) => {
                     />
                   </div>
                 </Flex>
-                {/* Conditional UI shown when user clicks to remove a brand */}
                 <div
                   data-w-id="96da7984-2260-4962-0d48-c3b889abade4"
                   className={`background-color-white border-1px padding-top-4 box-shadow-large rounded-large width-80 remove-dropdown ${show ? '' : 'hide'

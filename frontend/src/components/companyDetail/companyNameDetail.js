@@ -5,7 +5,6 @@ import propTypes from 'prop-types';
 import 'styles/normalize.css';
 
 
-
 /**
  * Displays the company name, brand name, and brand tier in a styled card layout.
  *

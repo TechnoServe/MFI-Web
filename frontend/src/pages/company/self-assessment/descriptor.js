@@ -214,8 +214,8 @@ const Descriptor = ({
                       ? 'Partly Met' :
                       x.value === 'MOSTLY_MET'
                         ? 'Mostly Met' :
-                        (x.value === '' || x.value === undefined || x.value === null)
-                          ? 'No Selection Available for this Tier' : 'No Evidence'
+                          (x.value === '' || x.value === undefined || x.value === null)
+                            ? 'No Selection Available for this Tier' : 'No Evidence'
                 )}
               </h4>
             </div>

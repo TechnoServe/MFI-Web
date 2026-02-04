@@ -294,3 +294,27 @@ module.exports.listCompanyMembers = (store) => async (req, res) => {
 
   res.status(500).json({message: 'Request not completed'});
 };
+
+/**
+ * Returns a paginated list of MFI Index company rankings.
+ * @param {Object} store - Data access object.
+ * @returns {Function} Express route handler.
+ */
+module.exports.indexRankingList = (store) => async (req, res) => {
+  try {
+    const { query } = req;
+
+    const errors = validate(query, paginationConstraint);
+    if (errors) return res.status(400).json({ errors });
+
+    const { before, after, 'page-size': size, 'cycle-id': cycleId } = query;
+
+    const results = await store.indexRankingList(before, after, +size, cycleId);
+
+    return res.json({ results });
+  } catch (error) {
+    const message = 'Failed to fetch index ranking list.';
+    console.error(message, error);
+    return res.status(500).json({ message });
+  }
+};

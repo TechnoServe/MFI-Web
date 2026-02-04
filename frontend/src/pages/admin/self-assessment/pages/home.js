@@ -11,7 +11,7 @@ import Personal from '../personal';
 const Home = () => {
   return (
     <div>
-      // Render the Personal self-assessment form section
+      {/* // Render the Personal self-assessment form section */}
       <Personal />
     </div>
   );

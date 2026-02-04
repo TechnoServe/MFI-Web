@@ -178,7 +178,7 @@ const AssessmentOverview = ({cycle, tabHeaders}) => {
                 />
               </div>
               {activeTab === val.name && cascade
-                ? 
+                ?
                 // Render subcategory details including evidence status
                 subCategory.map((subCat) => (
                   <div
@@ -235,16 +235,16 @@ const AssessmentOverview = ({cycle, tabHeaders}) => {
                               </div>
                             </div>
                           ):(
-                            <div>
+                            <div key={nanoid()}>
                             </div>
                           )) :(
                             <div className="flex-row-middle">
-                              
+
                             </div>
 
                           )}
 
-                          
+
                         </div>
                         <div className="flex-row-middle">
                           {/* Display IVC-selected evidence values and validation icons */}
@@ -288,11 +288,11 @@ const AssessmentOverview = ({cycle, tabHeaders}) => {
                               </div>
                             </div>
                           ):(
-                            <div>
+                            <div key={nanoid()}>
                             </div>
                           )) :(
                             <div className="flex-row-middle">
-                              
+
                             </div>
 
                           )}

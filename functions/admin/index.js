@@ -247,6 +247,25 @@ module.exports.inviteTeamMember = (store, transport) => async (req, res) => {
   }
 };
 
+
+/**
+ * Makes all company brands active.
+ * 
+ * @param {Object} store - The data store interface.
+ * @returns {Function} Express handler function.
+ */
+module.exports.makeAllCompanyBrandsActive = (store) => async (req, res) => {
+  try {
+    // Activate all company brands in the data store
+    await store.makeAllCompanyBrandsActive();
+    return res.json({ message: 'All company brands made active.' });
+  } catch (error) {
+    const message = 'Failed to make all company brands active.';
+    console.error(message, error);
+    return res.status(500).json({ message });
+  }
+};
+
 /**
  * Accepts an admin team member invitation and creates a user account.
  * @param {Object} store - Data access layer.

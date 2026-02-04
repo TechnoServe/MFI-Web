@@ -57,4 +57,4 @@ export const getApiResponseErrorMessage = (e, fallback = null) => {
 export const getCurrentCompany = () => {
   // Parse and return the company object from localStorage
   return JSON.parse(localStorage.getItem('company'));
-}
+};

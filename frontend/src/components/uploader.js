@@ -17,7 +17,7 @@ const getNextBtnInstanceId = () => `UppyModalOpenerBtn-${++BTN_INSTANCE_COUNT}`;
 const getAuthToken = () => sessionStorage.getItem('auth-token');
 
 /**
- * Uploader component using Uppy for document uploads. 
+ * Uploader component using Uppy for document uploads.
  * Supports uploading files with metadata and integrates Google Drive support.
  *
  * @param {Object} props - Component props.

@@ -8,7 +8,6 @@ import {
 import {request} from 'common';
 
 
-
 /**
  * CompanyMembers component fetches and displays a list of members associated with a company.
  * It shows a loading spinner while fetching data and renders member names and emails with avatars.

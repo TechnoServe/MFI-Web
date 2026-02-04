@@ -15,9 +15,9 @@ import proptypes from 'prop-types';
 const PageLayout = ({children}) => {
   return (
     <div>
-      // Render the page header
+      {/* // Render the page header */}
       <Header/>
-      // Render child components passed to this layout
+      {/* // Render child components passed to this layout */}
       {children}
     </div>
   );

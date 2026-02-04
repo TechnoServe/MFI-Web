@@ -10,7 +10,6 @@ import propTypes from 'prop-types';
  * @returns {JSX.Element} A rendered Bar chart comparing compliance scores with threshold.
  */
 const AssessmentChart = ({productTestData}) => {
-
   // Arrays to store compliance percentages and micronutrient names
   let percentageCompliance = [];
   let microNutrients = [];

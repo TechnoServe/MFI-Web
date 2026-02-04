@@ -13,12 +13,12 @@ const LandingFooter = () => {
   return (
     // Outer container for the footer with standard margin and layout class
     <div className="container-1280 margin-bottom-10 wf-section">
-      // Inner footer layout container
+      {/* // Inner footer layout container */}
       <div className="footer-10">
         <div className="container">
-          // Grid layout for organizing footer columns
+          {/* // Grid layout for organizing footer columns */}
           <div className="w-layout-grid footer-grid-02">
-            // Footer column with logo and copyright
+            {/* // Footer column with logo and copyright */}
             <div
               id="w-node-_5c35d527-7e3f-7442-fdbd-6d4eb5a800c3-da9fef06"
               className="footer-column"
@@ -30,7 +30,7 @@ const LandingFooter = () => {
                 Powered by <span className="link"><a href=" https://www.technoserve.org/" target="_blank">TechnoServe</a></span>
               </p>
             </div>
-            // Footer column with company-related links
+            {/* // Footer column with company-related links */}
             <div className="footer-column">
               <div className="footer-title">Company</div>
               <a
@@ -50,7 +50,7 @@ const LandingFooter = () => {
                 Privacy Policy
               </a>
             </div>
-            // Footer column with About and documentation links
+            {/* // Footer column with About and documentation links */}
             <div className="footer-column">
               <div className="footer-title">About</div>
               <a
@@ -70,7 +70,7 @@ const LandingFooter = () => {
                 Documentation
               </a>
             </div>
-            // Scroll-to-top button with arrow image
+            {/* // Scroll-to-top button with arrow image */}
             <a href="#Hero" className="footer-arrow box-shadow-large w-inline-block">
               <img src={arrowUp} alt="" className="flip-vertical" />
             </a>

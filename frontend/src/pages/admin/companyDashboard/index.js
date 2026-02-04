@@ -77,7 +77,7 @@ const CompanyDashboard = ({cycle}) => {
     const SATCategories = [{name: 'Personnel', score: 0, pointer: 1}, {name: 'Production', score: 0, pointer: 2}, {name: 'Procurement & Suppliers', score: 0, pointer: 3}, {name: 'Public Engagement', score: 0, pointer: 4}, {name: 'Governance', score: 0, pointer: 5}];
     let totalCompanies = 0;
     companyList.forEach((company) => {
-      if (company.ivcScores.length > 0) {
+      if (company.ivcScores?.length > 0) {
         totalCompanies++;
         SATCategories.forEach((category) => {
           const IVCCategoryScore = company.ivcScores?.find((x) => x.name === category.name);
@@ -271,8 +271,6 @@ const CompanyDashboard = ({cycle}) => {
 
     // Product Test
     if (filteredCompanyBrand.length > 0 && filteredCompanyBrand[0].brands.length > 0) {
-
-
       setProductTestData(filteredCompanyBrand[0]?.brands[0]?.productTests);
       setPTTotalScore(filteredCompanyBrand[0]?.brands[0]?.productTests[0]?.fortification.score);
     }
@@ -383,9 +381,11 @@ const CompanyDashboard = ({cycle}) => {
 
   // Tier One Breakdown
   const tierOneSABrand = selfAssessmentBrand?.filter((x) => x?.tier.includes('TIER_1'));
-  const tierOneSatBrand = tierOneSABrand?.filter((x) => x.tier.includes('TIER_1')).map((x) => x.ivcScores.map((x) => x.score).reduce(function (accumulator, currentValue) {
-    return accumulator + currentValue;
-  }));
+  const tierOneSatBrand = tierOneSABrand?.filter((x) => x?.tier.includes('TIER_1'))?.map((x) =>
+    (x.ivcScores?.map((x) => x.score)?.reduce(function (accumulator, currentValue) {
+      return accumulator + currentValue;
+    }, 0) || 0)
+  );
   const percentageTierOneSatBrand = tierOneSatBrand?.map((x) => x / 100 * 60);
 
   const tierOneSatBrandTotal = percentageTierOneSatBrand?.reduce(function (accumulator, currentValue) {
@@ -394,9 +394,12 @@ const CompanyDashboard = ({cycle}) => {
 
   // Tier Three Breakdown
   const tierThreeSABrand = selfAssessmentBrand?.filter((x) => x?.tier.includes('TIER_3'));
-  const tierThreeSatBrandCul = tierThreeSABrand?.filter((x) => x.tier.includes('TIER_3')).map((x) => x.ivcScores.map((x) => x.score).reduce(function (accumulator, currentValue) {
-    return accumulator + currentValue;
-  }, 0));
+  const tierThreeSatBrandCul = tierThreeSABrand?.filter((x) => x?.tier.includes('TIER_3'))?.map((x) => {
+    const scores = x.ivcScores?.map((x) => x.score) || [];
+    return scores.reduce(function (accumulator, currentValue) {
+      return accumulator + currentValue;
+    }, 0);
+  });
 
   const tierThreeSatBrandTotal = tierThreeSatBrandCul?.reduce(function (accumulator, currentValue) {
     return accumulator + currentValue;
@@ -405,10 +408,10 @@ const CompanyDashboard = ({cycle}) => {
   let SABrandsTierOne = 0;
   let SABrandsTierThree = 0;
   if ((selfAssessmentBrand?.map((x) => x.tier === 'TIER_1'))) {
-    SABrandsTierOne = tierOneSatBrandTotal.toFixed();
+    SABrandsTierOne = tierOneSatBrandTotal?.toFixed();
   }
   if ((selfAssessmentBrand?.map((x) => x.tier === 'TIER_3'))) {
-    SABrandsTierThree = tierThreeSatBrandTotal.toFixed();
+    SABrandsTierThree = tierThreeSatBrandTotal?.toFixed();
   }
 
   // Brands PT Charts
@@ -607,7 +610,7 @@ const CompanyDashboard = ({cycle}) => {
                       : 'Product Testing'}
                 </Text>
                 <Text className="margin-bottom-2 weight-medium" fontSize="44px" fontWeight="700">
-                  {val.value}%
+                  {Number(val.value).toFixed(2)}%
                 </Text>
                 <div className="text-small margin-bottom-5">
                   <span className="text-color-green">+23.12%</span> From Alpha Assessment

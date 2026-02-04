@@ -1,5 +1,11 @@
 import React, {useState, useEffect} from 'react';
-import {Container, Text, Box, Divider, useToast, Flex, Spinner, Button, Select, Spacer} from '@chakra-ui/react';
+import {
+  Container, Text, Box, Divider, useToast, Flex, Spinner, Button, Select, Spacer, Menu,
+  MenuButton,
+  MenuList,
+  MenuItem,
+  IconButton
+} from '@chakra-ui/react';
 import InputField from '../../../components/customInput';
 // import CustomSelect from '../../../components/customSelect';
 import {CSVLink} from 'react-csv';
@@ -12,10 +18,12 @@ import 'styles/webflow.css';
 import 'styles/mfi-tns.webflow.css';
 import 'styles/normalize.css';
 import {request} from 'common';
-import {FiStar} from 'react-icons/fi';
+import {FiStar, FiEdit} from 'react-icons/fi';
+import {MdMoreVert} from 'react-icons/md';
 import {IconContext} from 'react-icons/lib';
 import RemoveIndustry from 'components/companyDetail/RemoveIndustry';
 import IndustryPermissionRequest from 'components/companyDetail/IndustryPermissionRequest';
+import ComputeSATScores from 'components/companyDetail/ComputeSATScores';
 import {nanoid} from '@reduxjs/toolkit';
 import {useAuth} from 'hooks/user-auth';
 import {usePagination} from 'components/useDashboardPagination';
@@ -243,28 +251,34 @@ const Companies = () => {
     {
       company_name: item?.company_name,
       // SAT
-      self_assessment_tool: item?.satScores?.reduce((accum, item) => accum + item.score, 0).toFixed(),
-      sat_personnel: item?.satScores?.find((o) => o?.name === 'Personnel')?.score.toFixed(),
-      sat_production: item?.satScores?.find((o) => o?.name === 'Production')?.score.toFixed(),
-      sat_procurement_supply: item?.satScores?.find((o) => o?.name === 'Procurement & Suppliers')?.score.toFixed(),
-      sat_public_engagement: item?.satScores?.find((o) => o?.name === 'Public Engagement')?.score.toFixed(),
-      sat_governance: item?.satScores?.find((o) => o?.name === 'Governance')?.score.toFixed(),
+      self_assessment_tool: item?.satScores?.reduce((accum, item) => accum + item.score, 0)?.toFixed(),
+      sat_personnel: item?.satScores?.find((o) => o?.name === 'Personnel')?.score?.toFixed(),
+      sat_production: item?.satScores?.find((o) => o?.name === 'Production')?.score?.toFixed(),
+      sat_procurement_supply: item?.satScores?.find((o) => o?.name === 'Procurement & Suppliers')?.score?.toFixed(),
+      sat_public_engagement: item?.satScores?.find((o) => o?.name === 'Public Engagement')?.score?.toFixed(),
+      sat_governance: item?.satScores?.find((o) => o?.name === 'Governance')?.score?.toFixed(),
       // IVC
-      validated_scores: item?.ivcScores.reduce((accum, item) => accum + (item?.score?item.score:0), 0).toFixed(),
+      validated_scores: item?.ivcScores?.reduce((accum, item) => accum + (item?.score ? item.score : 0), 0).toFixed(),
       ivc_personnel: item?.ivcScores?.find((o) => o?.name === 'Personnel')?.score?.toFixed(),
       ivc_production: item?.ivcScores?.find((o) => o?.name === 'Production')?.score?.toFixed(),
       ivc_procurement_supply: item?.ivcScores?.find((o) => o?.name === 'Procurement & Suppliers')?.score?.toFixed(),
       ivc_public_engagement: item?.ivcScores?.find((o) => o?.name === 'Public Engagement')?.score?.toFixed(),
       ivc_governance: item?.ivcScores?.find((o) => o?.name === 'Governance')?.score?.toFixed(),
       // IEG
-      industry_expert_group: (item?.iegScores?.reduce((accum, item) => accum + (item?.score?item.score:0), 0)).toFixed(),
+      industry_expert_group: (item?.iegScores?.reduce((accum, item) => accum + (item?.score ? item.score : 0), 0))?.toFixed(),
       ieg_personnel: item?.iegScores?.find((o) => o?.category?.name === 'Personnel')?.score?.toFixed(),
       ieg_production: item?.iegScores?.find((o) => o?.category?.name === 'Production')?.score?.toFixed(),
       ieg_procurement_supply: item?.iegScores?.find((o) => o?.category?.name === 'Procurement & Suppliers')?.score?.toFixed(),
       ieg_public_engagement: item?.iegScores?.find((o) => o?.category?.name === 'Public Engagement')?.score?.toFixed(),
       ieg_governance: item?.iegScores?.find((o) => o?.category?.name === 'Governance')?.score?.toFixed(),
       // Brand Name
-      brand_name: item?.brands?.map((x) => x?.name + ':' + x.productTests[0]?.fortification?.score?.toFixed() + '\r\n')
+      brand_name: item?.brands?.map((x) => {
+        if (Array.isArray(x?.productTests) && x.productTests.length > 0 && x.productTests[0]?.fortification?.score !== undefined) {
+          return x?.name + ':' + x.productTests[0].fortification.score.toFixed() + '\r\n';
+        } else {
+          return x?.name + ':N/A\r\n';
+        }
+      })
     }
   ));
 
@@ -432,7 +446,7 @@ const Companies = () => {
                               </div>
                               <div className="flex-child-grow width-40 margin-right-2 flex-align-center tablet-width-full tablet-margin-bottom-2">
                                 <span className="table-responsive-header all-caps text-xs letters-looser">Self assessment </span>
-                                {company?.satScores.reduce((accum, item) => accum + item.score, 0).toFixed()}%
+                                {company?.satScores?.reduce((accum, item) => accum + item.score, 0).toFixed()}%
 
                                 {user.admin_user.role.value === 'nuclear_admin' || user.admin_user.role.value === 'super_admin' ?
                                     <IndustryPermissionRequest permissionRequest={company} cycle={selectedCycle} />
@@ -447,12 +461,35 @@ const Companies = () => {
 
                                   company.tier === 'TIER_1' ? company?.ivcScores.reduce((accum, item) => accum + item.score / 100 * 66, 0).toFixed() : 'No Tier'
                                 }% */}
-                                {company?.ivcScores.reduce((accum, item) => accum + item.score, 0).toFixed()}%
-                                <div onClick={() => {
-                                  setSelected('IVCAssessment', localStorage.setItem('company', JSON.stringify(company)));
-                                }} style={{marginLeft: '7px'}} className="button-secondary button-small margin-right-3 w-button" >
-                                Edit
-                                </div>
+                                {company?.ivcScores?.reduce((accum, item) => accum + item.score, 0).toFixed()}%
+                                <Menu>
+                                  <MenuButton
+                                    as={IconButton}
+                                    aria-label="Menu"
+                                    icon={<MdMoreVert />}
+                                    variant="ghost"
+                                    size="xs"
+                                  />
+                                  <MenuList>
+                                    {user.admin_user.role.value === 'nuclear_admin' ||
+                                      user.admin_user.role.value === 'super_admin' ? (
+                                          <ComputeSATScores
+                                            key={nanoid()}
+                                            company={company}
+                                            cycle={selectedCycle}
+                                          />
+                                        ) : (
+                                          ''
+                                        )}
+                                    <MenuItem
+                                      value="editIVC"
+                                      icon={<FiEdit strokeWidth="3" />}
+                                      onClick={() => setSelected('IVCAssessment', localStorage.setItem('company', JSON.stringify(company)))}
+                                    >
+                                      Edit IVC
+                                    </MenuItem>
+                                  </MenuList>
+                                </Menu>
                               </div>
 
                               <div className="flex-child-grow width-40 margin-right-2 flex-align-center tablet-width-full">

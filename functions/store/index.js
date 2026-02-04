@@ -16,6 +16,74 @@ const {getFirebaseAdmin} = require('../index.admin');
  * @returns {Object} Store object with data access methods.
  */
 module.exports = (db, auth) => {
+  /**
+   * Store object providing various database operations for users, companies, comments, documents, SAT questions, assessment answers, brands, roles, cycles, and more.
+   *
+   * @namespace store
+   * @property {CommentStore} comments - All database operations relating to comments.
+   * @property {DocumentStore} documents - All database operations relating to documents.
+   * @function getUserByEmail - Retrieves a user by email address.
+   * @function getUserByUid - Retrieves a user by Firestore document UID.
+   * @function listUsersByUid - Retrieves multiple users by an array of UIDs.
+   * @function listCompaniesByUid - Retrieves multiple companies by an array of UIDs.
+   * @function getUserByAuthId - Retrieves a user by Firebase Auth provider ID.
+   * @function getCompanyRoleByName - Retrieves a company role by its value/name.
+   * @function getUserTypeByName - Retrieves a user type by its value/name.
+   * @function getUserTypeById - Retrieves a user type by its document ID.
+   * @function createUser - Creates a user document.
+   * @function createCompanyUser - Creates a company user document.
+   * @function addCompanyBrands - Adds new brands to a company.
+   * @function updateCompanyBrand - Updates existing company brands.
+   * @function deleteCompanyBrands - Deletes specified brands from a company.
+   * @function updateSATQestions - Updates SAT questions in batch.
+   * @function updateSATQuestionCategory - Updates a SAT question category.
+   * @function addSATQestions - Adds a new SAT question.
+   * @function deleteSATQestions - Deletes a SAT question by ID.
+   * @function createCompanyAndUser - Creates both a company and a user, assigning the user as admin of the company.
+   * @function getProductTypes - Retrieves all product types.
+   * @function getCompanySizes - Retrieves all company sizes.
+   * @function saveActivityLog - Saves an activity log entry.
+   * @function getCompanyActivityLogs - Retrieves paginated activity logs for a company.
+   * @function getQuestionCategoryById - Retrieves a question category by ID.
+   * @function getProductTypeById - Retrieves a product type by ID.
+   * @function getTierById - Retrieves a tier by ID.
+   * @function getAssessmentAnswers - Returns a function to retrieve assessment answers for a given collection.
+   * @function getPreviousAssessmentAnswers - Returns a function to retrieve previous assessment answers for a given collection.
+   * @function getSatScores - Retrieves SAT scores for a company and cycle.
+   * @function setAssessmentScore - Sets or updates an assessment score.
+   * @function getQuestionCategories - Retrieves question categories, optionally filtered by parent IDs or root only.
+   * @function getModalCategories - Retrieves modal categories (root categories).
+   * @function getAdminUserByUserId - Retrieves an admin user by user ID, including role.
+   * @function getCompanyUserByUserId - Retrieves a company user by user ID, including role.
+   * @function getCompanyDataUserByUserId - Retrieves a company user by user ID, populating extra data if provided.
+   * @function getQuestions - Retrieves questions, optionally filtered by category IDs.
+   * @function getProductMicroNutrients - Retrieves product micro nutrients for a product type and optional micro nutrient ID.
+   * @function getProductMicroNutrient - Retrieves product micro nutrients for a product type.
+   * @function getActiveSATCycle - Retrieves the active SAT cycle, or by ID.
+   * @function getCycles - Retrieves all SAT cycles.
+   * @function updateOrCreateAssessmentAnswers - Returns a function to update or create assessment answers for a collection.
+   * @function getCompanyById - Retrieves a company by ID.
+   * @function getBrandById - Retrieves a brand by ID.
+   * @function updateCompany - Updates a company by ID.
+   * @function assignRole - Assigns a role to an admin user.
+   * @function lockSat - Locks a SAT cycle with a lock date.
+   * @function updateUserById - Updates a user by ID.
+   * @function setCompanyTier - Sets the tier for a company.
+   * @function softDeleteCompanyUser - Soft deletes company users by setting deleted_at timestamp.
+   * @function createIEGScores - Creates or updates IEG scores in batch.
+   * @function createSATScores - Creates or updates SAT scores in batch.
+   * @function getAuthUserByEmail - Retrieves a user by email address (for auth).
+   * @function getCompanyBrands - Retrieves brands for a company.
+   * @function getCompanyBrandsAdmin - Retrieves all brands for a company (admin).
+   * @function createAuthUser - Creates an authentication user.
+   * @function getCompanies - Retrieves companies, optionally paginated and/or filtered by IDs.
+   * @function getCompaniesAdmin - Retrieves all companies for admin, optionally paginated and/or filtered by IDs.
+   * @function getIvcCompanies - Retrieves IVC companies assigned to a user.
+   * @function approveSAT - Approves all SAT answers for a company and cycle by a user.
+   * @function assignCompanyToUser - Assigns a company to a user for a cycle.
+   * @function getAssessmentScores - Retrieves assessment scores for a company, cycle, and type.
+   * @function getAllAssessmentScores - Retrieves all assessment scores for all companies from Firestore, filtered by cycle and optionally by type.
+   */
   const store = {
     // All database operations relating to comments
     comments: new CommentStore(db, auth),
@@ -247,6 +315,27 @@ module.exports = (db, auth) => {
         return true;
       } catch (err) {
         console.error('add company brands', err);
+        return false;
+      }
+    },
+    /**
+     * Make all company brands active.
+     * @returns {Promise<boolean>} True if successful, false otherwise.
+     */
+    makeAllCompanyBrandsActive: async () => {
+      try {
+        const brands = await db.collection(COLLECTIONS.COMPANY_BRANDS).get();
+        if (brands.empty) return false;
+
+        const batch = db.batch();
+        brands.forEach((brand) => {
+          batch.update(brand.ref, { active: true });
+        });
+
+        await batch.commit();
+        return true;
+      } catch (err) {
+        console.error('make all brands active', err);
         return false;
       }
     },
@@ -667,6 +756,7 @@ module.exports = (db, auth) => {
      * @returns {Promise<void>}
      */
     setAssessmentScore: async (companyId, cycleId, type, value) => {
+      console.log('setAssessmentScore', companyId, cycleId, type, value);
       let query = db
         .collection(COLLECTIONS.COMPUTED_ASSESSMENT_SCORES)
         .where('company_id', '==', companyId);
@@ -1194,6 +1284,18 @@ module.exports = (db, auth) => {
         return false;
       }
     },
+    createSATScores: async (scores, type, companyId, cycleId) => {
+      try {
+        const upsertCurry = upsertSATAssessmentScore(db, type, companyId, cycleId);
+        const batchSores = scores.map(upsertCurry);
+
+        await Promise.all(batchSores);
+        return true;
+      } catch (err) {
+        console.error(err);
+        return false;
+      }
+    },
 
     // Auth methods
     /**
@@ -1219,11 +1321,24 @@ module.exports = (db, auth) => {
     },
 
     /**
-     * Retrieves brands for a company.
+     * Retrieves active brands for a company.
      * @param {string} companyId - Company ID.
      * @returns {Promise<Object[]>} Array of brand objects.
      */
     getCompanyBrands: async (companyId) => {
+      const query = db.collection(COLLECTIONS.COMPANY_BRANDS).where('company_id', '==', companyId).where('active', '==', true);
+      const data = await query.get();
+
+      if (data.empty) return [];
+
+      return data.docs.map((doc) => docToObject(doc));
+    },
+    /**
+     * Retrieves brands for a company.
+     * @param {string} companyId - Company ID.
+     * @returns {Promise<Object[]>} Array of brand objects.
+     */
+    getCompanyBrandsAdmin: async (companyId) => {
       const query = db.collection(COLLECTIONS.COMPANY_BRANDS).where('company_id', '==', companyId);
       const data = await query.get();
 
@@ -1386,8 +1501,295 @@ module.exports = (db, auth) => {
       if (data.empty) return [];
 
       return data.docs.map(docToObject);
+    },
+    /**
+     * Retrieves all assessment scores for all companies from Firestore,
+     * filtered by cycle and optionally by type, with optional company info.
+     * 
+     * @param {string} cycle - The assessment cycle ID (required).
+     * @param {string} [type] - Optional type to filter by (e.g., 'validated' or 'selfReported').
+     * @param {boolean} [includeCompany=true] - Whether to include company info.
+     * @returns {Promise<Array<Object>>} Array of score records.
+     */
+    getAllAssessmentScores: async (cycle, type, includeCompany = true) => {
+      let query = db.collection(COLLECTIONS.ASSESSMENT_SCORES).where('cycle_id', '==', cycle);
+
+      if (type) {
+        query = query.where('type', '==', type);
+      }
+
+      const snapshot = await query.get();
+      const rows = snapshot.docs.map(docToObject);
+
+      if (!includeCompany || rows.length === 0) return rows;
+
+      const companyIds = Array.from(new Set(rows.map((r) => r.company_id).filter(Boolean)));
+      const companies = await Promise.all(companyIds.map((id) => store.getCompanyById(id)));
+      const companiesById = companies.reduce((acc, c) => {
+        if (c && c.id) acc[c.id] = c;
+        return acc;
+      }, {});
+
+      return rows.map((r) => {
+        const c = companiesById[r.company_id];
+        return {
+          ...r,
+          company_name: c?.company_name || null,
+          tier: c?.tier || null,
+          company_size: c?.company_size || null,
+          active: c?.active ?? null
+        };
+      });
     }
+    ,
+    /**
+     * Computes SAT variance per company for a cycle.
+     * Aggregates scores from ASSESSMENT_SCORES by company and type, then
+     * returns Self-Assessed (SAT) total, Validated (IVC) total, and variance.
+     *
+     * @param {string} cycleId - Cycle ID to compute variance for.
+     * @returns {Promise<Array<Object>>} Array of records: {
+     *   company_id, company_name, tier, company_size, selfScore, validatedScore,
+     *   variance, variancePct
+     * }
+     */
+    getSATVarianceByCompany: async (cycleId) => {
+      // Pull all assessment scores (all types) and enrich with company info
+      const rows = (await store.getAllAssessmentScores(cycleId, null, true))
+        .filter(r => r.active === true);
+
+      if (!rows || rows.length === 0) return [];
+
+      const byCompany = _.groupBy(rows, 'company_id');
+
+      const pickNumber = (x) => {
+        const n = typeof x === 'number' ? x : Number(x);
+        return Number.isFinite(n) ? n : 0;
+      };
+
+      const isSAT = (t = '') => {
+        const val = String(t).toUpperCase();
+        return val === 'SAT' || val === 'SA' || val === 'SELF' || val === 'SELF_REPORTED';
+      };
+
+      const isIVC = (t = '') => {
+        const val = String(t).toUpperCase();
+        return val === 'IVC' || val === 'VALIDATED';
+      };
+
+      return Object.entries(byCompany).map(([company_id, items]) => {
+        const company_name = items[0]?.company_name || null;
+        const tier = items[0]?.tier || null;
+        const company_size = items[0]?.company_size || null;
+
+        const satTotal = items
+          .filter((r) => isSAT(r.type))
+          .reduce((s, r) => s + pickNumber(r.score ?? r.value), 0);
+
+        const ivcTotal = items
+          .filter((r) => isIVC(r.type))
+          .reduce((s, r) => s + pickNumber(r.score ?? r.value), 0);
+
+        const variance = Math.abs(satTotal - ivcTotal);
+        const variancePct = ivcTotal > 0 ? (variance / ivcTotal) * 100 : null;
+
+        return {
+          company_id,
+          company_name,
+          tier,
+          company_size,
+          selfScore: satTotal,
+          validatedScore: ivcTotal,
+          variance,
+          variancePct,
+        };
+      });
+    },
+      /**
+ * Builds 4PG table rows for all active companies for a given cycle.
+ * Output columns (exact order):
+ * Company Name, TIER, Validated Scores (%),
+ * IVC Personnel (%), IVC Production (%), IVC Procurement and Suppliers (%),
+ * IVC Public Engagement (%), IVC Governance (%),
+ * Industry Expert Group (%),
+ * IEG Personnel (%), IEG Production (%), IEG Procurement and Suppliers (%),
+ * IEG Public Engagement, IEG Governance,
+ * Average Personnel (%), Average Production (%),
+ * Average Procurement and Suppliers (%), Average Public Engagement (%),
+ * Average Governance (%), Average 4PG
+ */
+  getAll4PGRanking: async (cycleId) => {
+    if (!cycleId) return [];
+
+    const companies = await store.getCompanies(null, null, 500);
+    if (!companies || companies.length === 0) return [];
+
+    const toNum = (x) => {
+      const n = typeof x === 'number' ? x : Number(x);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const pillarKeys = [
+      'Personnel',
+      'Production',
+      'Procurement and Suppliers',
+      'Public Engagement',
+      'Governance',
+    ];
+
+    const detectPillarFromText = (text) => {
+      const t = String(text || '').toLowerCase();
+      if (!t) return null;
+      if (t.includes('personnel')) return 'Personnel';
+      if (t.includes('production')) return 'Production';
+      if (t.includes('procurement')) return 'Procurement and Suppliers';
+      if (t.includes('supplier')) return 'Procurement and Suppliers';
+      if (t.includes('public engagement')) return 'Public Engagement';
+      if (t.includes('governance')) return 'Governance';
+      return null;
+    };
+
+    const avg = (arr) => {
+      const vals = arr.map(toNum).filter((n) => Number.isFinite(n));
+      if (!vals.length) return null;
+      return vals.reduce((a, b) => a + b, 0) / vals.length;
+    };
+
+    const resultRows = await Promise.all(
+      companies
+        .filter((c) => c?.active === true)
+        .map(async (c) => {
+          const [iegScores, ivcScores] = await Promise.all([
+            store.getAssessmentScores({ companyId: c.id, cycleId, type: 'IEG' }),
+            store.getAssessmentScores({ companyId: c.id, cycleId, type: 'IVC' }),
+          ]);
+
+          // Build a lookup of QUESTION_CATEGORIES for all category_ids used in IEG + IVC
+          const catIds = Array.from(
+            new Set([
+              ...((Array.isArray(iegScores) ? iegScores : []).map((r) => r.category_id).filter(Boolean)),
+              ...((Array.isArray(ivcScores) ? ivcScores : []).map((r) => r.category_id).filter(Boolean)),
+            ])
+          );
+          const catObjs = (catIds.length ? await store.getQuestionCategoriesByIds(catIds) : []) || [];
+          const catById = catObjs.reduce((acc, cat) => {
+            if (cat && cat.id) acc[cat.id] = cat;
+            return acc;
+          }, {});
+
+          const detectPillar = (rec) => {
+            // 1) Try inline text fields first (if any)
+            const inlineText = [rec.pillar, rec.component, rec.area, rec.category, rec.category_name, rec.section, rec.title]
+              .filter(Boolean)
+              .map(String)
+              .join(' | ');
+            let pillar = detectPillarFromText(inlineText);
+            if (pillar) return pillar;
+
+            // 2) Fall back to QUESTION_CATEGORIES lookup using category_id
+            const cat = rec && rec.category_id ? catById[rec.category_id] : null;
+            if (cat) {
+              // Try common name fields on the category object
+              const nameText = [cat.name, cat.title, cat.label, cat.category_name]
+                .filter(Boolean)
+                .map(String)
+                .join(' | ');
+              pillar = detectPillarFromText(nameText);
+              if (pillar) return pillar;
+            }
+
+            return null;
+          };
+
+          const iegOverall = avg((Array.isArray(iegScores) ? iegScores : []).map((r) => toNum(r.score ?? r.value)));
+          const ivcOverall = avg((Array.isArray(ivcScores) ? ivcScores : []).map((r) => toNum(r.score ?? r.value)));
+
+          // Initialize per-pillar buckets
+          const buckets = {
+            IVC: {
+              'Personnel': [],
+              'Production': [],
+              'Procurement and Suppliers': [],
+              'Public Engagement': [],
+              'Governance': [],
+            },
+            IEG: {
+              'Personnel': [],
+              'Production': [],
+              'Procurement and Suppliers': [],
+              'Public Engagement': [],
+              'Governance': [],
+            },
+          };
+
+          (Array.isArray(ivcScores) ? ivcScores : []).forEach((rec) => {
+            const key = detectPillar(rec);
+            if (key && buckets.IVC[key]) buckets.IVC[key].push(toNum(rec.score ?? rec.value));
+          });
+
+          (Array.isArray(iegScores) ? iegScores : []).forEach((rec) => {
+            const key = detectPillar(rec);
+            if (key && buckets.IEG[key]) buckets.IEG[key].push(toNum(rec.score ?? rec.value));
+          });
+
+          const ivcPillar = Object.fromEntries(
+            pillarKeys.map((k) => [k, avg(buckets.IVC[k])])
+          );
+          const iegPillar = Object.fromEntries(
+            pillarKeys.map((k) => [k, avg(buckets.IEG[k])])
+          );
+          // Compute sum of IVC pillar averages
+          const ivcSum = pillarKeys.reduce((sum, k) => sum + toNum(ivcPillar[k] ?? 0), 0);
+          // Compute sum of IEG pillar averages
+          const iegSum = pillarKeys.reduce((sum, k) => sum + toNum(iegPillar[k] ?? 0), 0);
+
+          const avgPersonnel = avg([ivcPillar['Personnel'], iegPillar['Personnel']].filter((v) => v != null));
+          const avgProduction = avg([ivcPillar['Production'], iegPillar['Production']].filter((v) => v != null));
+          const avgProcSup = avg([ivcPillar['Procurement and Suppliers'], iegPillar['Procurement and Suppliers']].filter((v) => v != null));
+          const avgPublicEng = avg([ivcPillar['Public Engagement'], iegPillar['Public Engagement']].filter((v) => v != null));
+          const avgGovernance = avg([ivcPillar['Governance'], iegPillar['Governance']].filter((v) => v != null));
+
+          const avg4PGSum = avgPersonnel + avgProduction + avgProcSup + avgPublicEng + avgGovernance;
+
+          return {
+            'Company Name': c.company_name || null,
+            'TIER': c.tier || null,
+            'Validated Scores (%)': ivcSum,
+
+            'IVC Personnel (%)': ivcPillar['Personnel'],
+            'IVC Production (%)': ivcPillar['Production'],
+            'IVC Procurement and Suppliers (%)': ivcPillar['Procurement and Suppliers'],
+            'IVC Public Engagement (%)': ivcPillar['Public Engagement'],
+            'IVC Governance (%)': ivcPillar['Governance'],
+
+            'Industry Expert Group (%)': iegSum,
+            'IEG Personnel (%)': iegPillar['Personnel'],
+            'IEG Production (%)': iegPillar['Production'],
+            'IEG Procurement and Suppliers (%)': iegPillar['Procurement and Suppliers'],
+            'IEG Public Engagement': iegPillar['Public Engagement'],
+            'IEG Governance': iegPillar['Governance'],
+
+            'Average Personnel (%)': avgPersonnel,
+            'Average Production (%)': avgProduction,
+            'Average Procurement and Suppliers (%)': avgProcSup,
+            'Average Public Engagement (%)': avgPublicEng,
+            'Average Governance (%)': avgGovernance,
+            'Average 4PG': avg4PGSum,
+          };
+        })
+    );
+
+    // Optional: sort by Average 4PG desc
+    const sorted = resultRows.sort((a, b) => {
+      const A = toNum(a['Average 4PG'] ?? -1);
+      const B = toNum(b['Average 4PG'] ?? -1);
+      return B - A;
+    });
+
+    return sorted;
+  }
   };
+
 
   /**
    * Retrieves company IDs assigned to a user.
@@ -1675,6 +2077,34 @@ module.exports = (db, auth) => {
   };
 
   /**
+   * Retrieves a ranking list of companies with aggregate scores for a cycle.
+   * @param {string|null} before - Document ID to end before.
+   * @param {string|null} after - Document ID to start after.
+   * @param {number} size - Page size.
+   * @param {string|number} cycle_id - Cycle ID or 0 for active.
+   * @returns {Promise<Object[]>} Array of company aggregate score objects.
+   */
+  store.indexRankingList = async (before, after, size = 15, cycle_id = 0) => {
+    const companies = await store.getCompanies(before, after, size);
+    //const activeCyle = await store.getActiveSATCycle();
+    const cycleId = (cycle_id != 0)
+      ? cycle_id
+      : (await store.getActiveSATCycle()).id;
+
+    if (companies.length < 1) return [];
+
+    let data = [];
+    // Fetch all company aggregate scores in parallel and then push to data array
+    await Promise.all(
+      companies.map(async (doc) => {
+        const score = await store.getCompanyAggsScoreV2(doc.id, cycleId);
+        data.push(...score);
+      })
+    );
+    return data;
+  };
+
+  /**
    * Retrieves question categories by an array of IDs.
    * @param {string[]} categoryIds - Category IDs.
    * @returns {Promise<Object[]|null>} Array of category objects or null.
@@ -1894,6 +2324,50 @@ module.exports = (db, auth) => {
       iegTotal,
       // overallweightedscore
     };
+  };
+
+  /**
+   * Retrieves aggregate scores for a company for a cycle (and optionally user).
+   * @param {string} companyId - Company ID.
+   * @param {string|null} cycleId - Cycle ID.
+   * @param {Object|null} user - Optional user object.
+   * @returns {Promise<Object>} Aggregate score object for the company.
+   */
+  store.getCompanyAggsScoreV2 = async (companyId, cycleId = null, user = null) => {
+    const company = await store.getCompanyById(companyId);
+
+    if (!company) return company;
+
+    const iegScores = await store.getAssessmentScores({
+      companyId,
+      cycleId,
+      type: 'IEG'
+    });
+  
+    const ivcScores = await store.getAssessmentScores({
+      companyId,
+      cycleId,
+      type: 'IVC'
+    });
+    const iegTotal = iegScores.reduce((accum, { score }) => accum + score, 0) * 0.2;
+    const ivcTotal = ivcScores.reduce((accum, { score }) => accum + score, 0) * 0.60;
+
+    let brands = await store.getCompanyBrands(companyId);
+
+    brands = await Promise.all(
+      brands.map(async (brand) => ({
+        ..._.omit(company, ['company_size', 'created_at', 'updated_at']),
+        ..._.omit(brand, ['product_type', 'created_at', 'updated_at']),
+        productTests: await store.getBrandProductTests(brand.id, cycleId),
+        productType: await store.getProductTypeById(brand.product_type),
+        ieg: iegTotal,
+        ivc: ivcTotal
+      }))
+    );
+
+    
+
+    return brands;
   };
 
   /**
@@ -2257,7 +2731,7 @@ module.exports = (db, auth) => {
 
       score = (score / category.children.length) * (category.weight / 100);
 
-      return {name: category.name, score, pointer: category.pointer};
+      return { name: category.name, score, pointer: category.pointer, category_id: category.id };
     });
   };
 
@@ -2567,5 +3041,22 @@ const upsertAssessmentScore = (db) => async (originalScore) => {
   } else {
     const scoreDocRef = scoreDoc.docs[0].ref;
     return scoreDocRef.update({...score, updated_at: firestore.FieldValue.serverTimestamp()});
+  }
+};
+
+const upsertSATAssessmentScore = (db, type, companyId, cycleId) => async (originalScore) => {
+  console.log('upsertSATAssessmentScore', type, companyId, cycleId, originalScore);
+  const score = { ...originalScore, type };
+  console.log('score', score);
+
+  const { category_id: catId } = score;
+  console.log('upsertSATAssessmentScore', catId);
+  const scoreDoc = await db.collection(COLLECTIONS.ASSESSMENT_SCORES).where('company_id', '==', companyId).where('cycle_id', '==', cycleId).where('category_id', '==', catId).where('type', '==', type).get();
+
+  if (scoreDoc.empty) {
+    return db.collection(COLLECTIONS.ASSESSMENT_SCORES).add({ ...score, company_id: companyId, cycle_id: cycleId, created_at: firestore.FieldValue.serverTimestamp() });
+  } else {
+    const scoreDocRef = scoreDoc.docs[0].ref;
+    return scoreDocRef.update({ ...score, updated_at: firestore.FieldValue.serverTimestamp() });
   }
 };

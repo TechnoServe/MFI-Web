@@ -20,9 +20,9 @@ import 'theme/style.css';
 ReactDOM.render(
   // Wrap the app with Redux Provider for global state management
   <Provider store={store}>
-    // Provide Chakra UI theming and context
+    {/* // Provide Chakra UI theming and context */}
     <ChakraProvider>
-      // Render the main App component
+      {/* // Render the main App component */}
       <App />
     </ChakraProvider>
   </Provider>,

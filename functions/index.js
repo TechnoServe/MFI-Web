@@ -50,10 +50,11 @@ v1.get('/product-type-list', generalRoutes.productTypeList(store));
 v1.get('/product-micro-nutrients', generalRoutes.productMicroNutrients(store));
 v1.get('/product-micro-nutrient', generalRoutes.productMicroNutrient(store));
 v1.get('/ranking-list', generalRoutes.rankingList(store));
+v1.get('/index-ranking-list', generalRoutes.indexRankingList(store));
 
 // Assessments routes
 const assessments = new express.Router();
-assessments.post('/computes-scores', assessmentsController.computeScore(store));
+assessments.post('/compute-scores', [middlewares.authorization(store)], assessmentsController.computeScore(store));
 assessments.post('/ieg', [middlewares.authorization(store)], assessmentsController.persistIEGScores(store));
 assessments.post('/sat', [middlewares.authorization(store)], assessmentsController.persistSATScores(store));
 v1.use('/assessments', assessments);
@@ -124,6 +125,7 @@ adminRoute.get('/companies', [middlewares.authorization(store), middlewares.isMF
 adminRoute.get('/companies-admin', [middlewares.authorization(store), middlewares.isMFIAdmin], companyRoutes.getCompaniesAdmin(store));
 adminRoute.put('/companies-admin/:id/activate', [middlewares.authorization(store), middlewares.isMFIAdmin], companyRoutes.activateCompany(store));
 adminRoute.put('/companies-admin/:id/deactivate', [middlewares.authorization(store), middlewares.isMFIAdmin], companyRoutes.deactivateCompany(store));
+adminRoute.get('/brands-admin', [middlewares.authorization(store), middlewares.isMFIAdmin], companyRoutes.getBrandsAdmin(store));
 adminRoute.get('/roles', [middlewares.authorization(store), middlewares.isMFIAdmin], adminController.getAdminRoles(store));
 adminRoute.get('/active-cycle', [middlewares.authorization(store), middlewares.isMFIAdmin], adminController.getActiveCycle(store));
 adminRoute.get('/cycles', [middlewares.authorization(store), middlewares.isMFIAdmin], adminController.getCycles(store));
@@ -132,10 +134,14 @@ adminRoute.put('/lock-sat', [middlewares.authorization(store), middlewares.isMFI
 adminRoute.get('/index', [middlewares.authorization(store), middlewares.isMFIAdmin], companyRoutes.getAdminIndex(store));
 adminRoute.post('/ivc', [middlewares.authorization(store), middlewares.isMFIAdmin], companyRoutes.submitIVCAnswer(store));
 adminRoute.get('/assessment-scores', [middlewares.authorization(store), middlewares.isMFIAdmin], assessmentsController.getScores(store));
+adminRoute.get('/all-assessment-scores', [middlewares.authorization(store), middlewares.isMFIAdmin], assessmentsController.getAllScores(store));
+adminRoute.get('/sat-variance', [middlewares.authorization(store), middlewares.isMFIAdmin], assessmentsController.getSATVariance(store));
+adminRoute.get('/4pg-ranking', [middlewares.authorization(store), middlewares.isMFIAdmin], assessmentsController.getAll4PGRanking(store));
 adminRoute.delete('/company/delete/:id', [middlewares.authorization(store), middlewares.isMFIAdmin, middlewares.isAuthorized(canApproveSAT)], adminController.deleteCompanyData(store));
 adminRoute.delete('/micronutrient/:ptid/:microid', [middlewares.authorization(store), middlewares.isMFIAdmin, middlewares.isAuthorized(canApproveSAT)], adminController.deleteMicroNutrientScore(store));
 adminRoute.delete('/delete/user/:id/:authId', [middlewares.authorization(store), middlewares.isMFIAdmin, middlewares.isAuthorized(canApproveSAT)], adminController.deleteUser(store));
 adminRoute.post('/email', [middlewares.authorization(store), middlewares.isMFIAdmin], adminController.emailCompany(store, mailTransport));
+adminRoute.put('/brands/activate/all', [middlewares.authorization(store), middlewares.isMFIAdmin], adminController.makeAllCompanyBrandsActive(store));
 adminRoute.get('/sat-export/:company/:cycle', [middlewares.authorization(store), middlewares.isMFIAdmin], adminController.satExport(store));
 v1.use('/admin', adminRoute);
 
@@ -144,7 +150,7 @@ v1.use('/documents', [dataStoreMiddleware(store), middlewares.authorization(stor
 
 const app = express();
 
-app.use(cors());
+app.use(cors({ origin: true }));
 app.use('/api/v1', v1);
 app.get('/healthz', (req, res) => res.send('Ok'));
 

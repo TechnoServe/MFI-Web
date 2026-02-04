@@ -9,7 +9,6 @@ import {useToast} from '@chakra-ui/react';
 import {getApiResponseErrorMessage} from 'utills/helpers';
 
 
-
 /**
  * MembersAcceptingInvite renders a form allowing an invited member to complete their profile
  * by providing a full name. The form submits the full name and invitation token to finalize signup.
@@ -33,7 +32,7 @@ const MembersAcceptingInvite = () => {
 
   /**
    * Validates the full name field to ensure it is not empty
-   * 
+   *
    * @returns {boolean} True if valid, false otherwise
    */
   const validateForm = () => {
@@ -117,12 +116,12 @@ const MembersAcceptingInvite = () => {
                   <fieldset disabled={loading}></fieldset>
                   <div className="mt-10">
                     <div className="mb-2 text-sm">
-                      // Label for full name input field
+                      {/* // Label for full name input field */}
                       <label htmlFor="email" className="form-label">
                         Full Name
                       </label>
                     </div>
-                    // Input field for user's full name
+                    {/* // Input field for user's full name */}
                     <input
                       name="fullName"
                       className="form-control border-gray-300 focus:border-blue-600 form-input margin-bottom-4 w-input"
@@ -130,11 +129,11 @@ const MembersAcceptingInvite = () => {
                       onChange={(e) => setFullName(e.target.value)}
                       onBlur={validateForm}
                     />
-                    // Display validation error message if present
+                    {/* // Display validation error message if present */}
                     <div className="mt-2 text-sm text-red-600">{fullNameError}</div>
                   </div>
                   <div className="mt-7">
-                    // Submit button, shows loader or "Get Started" text
+                    {/* // Submit button, shows loader or "Get Started" text */}
                     <button
                       className="btn w-full border-green-500 bg-green-500 focus:bg-green-700 focus:border-green-700  text-white"
                       type="submit"

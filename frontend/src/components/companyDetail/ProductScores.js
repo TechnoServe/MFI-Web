@@ -41,15 +41,18 @@ const ProductScoreCard = ({fortifyAndProductTest, cycle}) => {
                 <div className="padding-x-3 padding-y-2 mb-2 rounded-large background-color-blue-lighter text-center" style={{width: 144}}>
                   <div className="text-small text-color-blue weight-medium">
 
-                    {/* Determine fortification status based on compliance percentages */}
-                    {comply?.productTests[0]?.results?.map((x) => x.percentage_compliance).every((el) => el > 99) ? 'Fully Fortified'
-                      : comply?.productTests[0]?.results?.map((x) => x.percentage_compliance).some((el) => el >= 80) ? 'Adequately Fortified'
-                        : comply?.productTests[0]?.results?.map((x) => x.percentage_compliance).some((el) => el >= 51) ? 'Partly Fortified'
-                          : comply?.productTests[0]?.results?.map((x) => x.percentage_compliance).some((el) => el >= 31) ? 'Inadequately Fortified'
-                            : comply?.productTests[0]?.results?.map((x) => x.percentage_compliance).every((el) => el <= 30) ? 'Not Fortified'
-                              :
-                              ''}
-                    {/* {console.log('comply', comply?.productTests[0]?.results?.map((x) => x.percentage_compliance))} */}
+                    {/* Check if productTests and results exist before determining fortification status */}
+                    {comply?.productTests?.length > 0 && comply.productTests[0]?.results?.length > 0
+                      ? (() => {
+                          const percentages = comply.productTests[0].results.map((x) => x.percentage_compliance);
+                          if (percentages.every((el) => el > 99)) return 'Fully Fortified';
+                          if (percentages.some((el) => el >= 80)) return 'Adequately Fortified';
+                          if (percentages.some((el) => el >= 51)) return 'Partly Fortified';
+                          if (percentages.some((el) => el >= 31)) return 'Inadequately Fortified';
+                          if (percentages.every((el) => el <= 30)) return 'Not Fortified';
+                          return '';
+                        })()
+                      : 'No Data'}
 
                   </div>
                 </div>

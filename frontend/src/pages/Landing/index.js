@@ -28,9 +28,9 @@ import {Link} from 'react-router-dom';
 const Landing = () => {
   return (
     <div>
-      // Hero section introducing the MFI platform
+      {/* // Hero section introducing the MFI platform */}
       <LandingHero />
-      // Section describing what the MFI is and its component scores
+      {/* // Section describing what the MFI is and its component scores */}
       <Flex flex={1} className="mt-40 md:mt-20 sm:flex-col" flexWrap="wrap">
         <Flex
           flex={1}
@@ -71,7 +71,7 @@ const Landing = () => {
           <img src={mfiPillar} loading="lazy" className="object-contain" alt="" />
         </Flex>
       </Flex>
-      // Section describing the Self-Assessment Tool (SAT)
+      {/* // Section describing the Self-Assessment Tool (SAT) */}
       <div className="container-1280 margin-bottom-10 wf-section">
         <div className="grid-2-columns padding-y-20 flex-row-middle">
           <div className="portrait-margin-bottom-6">
@@ -102,7 +102,7 @@ const Landing = () => {
           </div>
         </div>
       </div>
-      // Section describing periodic product quality testing
+      {/* // Section describing periodic product quality testing */}
       <div className="container-1280 margin-bottom-10 wf-section" style={{background: '#FAFAFA'}}>
         <div className="grid-2-columns padding-y-20 flex-row-middle">
           <div>
@@ -133,7 +133,7 @@ const Landing = () => {
         </div>
       </div>
 
-      // Section about Industry Expert Group (IEG) and its role
+      {/* // Section about Industry Expert Group (IEG) and its role */}
       <div className="container-1280 margin-bottom-12 wf-section">
         <div className="grid-2-columns padding-y-20 flex-row-middle">
           <div className="portrait-margin-bottom-6">
@@ -157,7 +157,7 @@ const Landing = () => {
           </div>
         </div>
       </div>
-      // Section describing MFI benefits for industry stakeholders
+      {/* // Section describing MFI benefits for industry stakeholders */}
       <div className="container-1280 wf-section">
         <h3 className="text-align-center regularBoldTexts">What Does The MFI Mean For You?</h3>
         <div className="grid-2-columns padding-y-20 flex-row-middle">
@@ -229,7 +229,7 @@ const Landing = () => {
           </div>
         </div>
       </div>
-      // Section describing MFI benefits for consumers
+      {/* // Section describing MFI benefits for consumers */}
       <div className="background-secondary wf-section">
         <div className="container-1280 background-secondary">
           <div className="grid-2-columns padding-y-20 flex-row-middle">
@@ -277,7 +277,7 @@ const Landing = () => {
           </div>
         </div>
       </div>
-      // Section describing MFI benefits for government and regulatory bodies
+      {/* // Section describing MFI benefits for government and regulatory bodies */}
       <div className="container-1280 wf-section">
         <div className="grid-2-columns padding-y-20 flex-row-middle">
           <div
@@ -374,7 +374,7 @@ const Landing = () => {
           </div>
         </div>
       </div>
-      // Final call-to-action section prompting company registration
+      {/* // Final call-to-action section prompting company registration */}
       <div className="container-1280 margin-bottom-10 wf-section">
         <div className="footer-cta-background">
           <div className="width-1-2 flex-column-centered portrait-width-full tablet-width-9-12">
@@ -388,7 +388,7 @@ const Landing = () => {
           </div>
         </div>
       </div>
-      // Footer section of the landing page
+      {/* // Footer section of the landing page */}
       <LandingFooter />
     </div>
   );

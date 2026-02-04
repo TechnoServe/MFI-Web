@@ -51,12 +51,31 @@ module.exports.computeScore = (store) => async (req, res) => {
     const cycleId = req.body['cycle-id'] ? req.body['cycle-id'] : (await store.getActiveSATCycle()).id;
 
     let score = 0;
+    let ivcScore = 0;
 
+    const company = await store.getCompanyById(req.body['company-id']);
+    console.log('Company:', company);
+    
     switch (req.body['assessment-type']) {
       case SCORE_TYPES.SAT: {
-        const answers = await store.getSatAnswers(req.body['company-id'], [], cycleId);
-        const sumOfPoints = answers.reduce((sum, answer) => sum + answer.points, 0);
-        score = (sumOfPoints / answerHashes.length);
+        // Fetch SAT and IVC answers, compute scores and completion rates
+        const answers = await store.getCompanySatScores(req.body['company-id'], cycleId, req.user, !cycleId);
+
+        await store.createSATScores(answers, "SAT", req.body['company-id'], cycleId);
+        const ivcAnswers = await store.getCompanyIvcScores(req.body['company-id'], cycleId, req.user, !cycleId);
+        await store.createSATScores(ivcAnswers, "IVC", req.body['company-id'], cycleId);
+        const sumOfPoints = answers.reduce((sum, answer) => sum + answer.score, 0);
+        const ivcSumOfPoints = ivcAnswers.reduce((sum, answer) => sum + answer.score, 0);
+        //score = (sumOfPoints / answerHashes.length);
+        score = sumOfPoints;
+        ivcScore = ivcSumOfPoints;
+        break;
+      }
+      case SCORE_TYPES.IEG: {
+        // Fetch and compute IEG score
+        const answers = await store.getIEGScores(req.body['company-id'], 'IEG', cycleId, req.user);
+        const sumOfPoints = answers.reduce((sum, { value }) => sum + value, 0);
+        score = sumOfPoints;
         break;
       }
 
@@ -67,11 +86,13 @@ module.exports.computeScore = (store) => async (req, res) => {
     }
 
 
-    const company = store.getCompanyById(req.body['company-id']);
+    
 
-    if (company.tier == COMPANY_TIERS.TIER_1) score = score * 100/60;
-
+    // Store computed assessment scores
     await store.setAssessmentScore(company.id, cycleId, req.body['assessment-type'], score);
+    if (req.body['assessment-type'] === SCORE_TYPES.SAT) {
+      await store.setAssessmentScore(company.id, cycleId, 'IVC', ivcScore);
+    }
 
     return res.json({message: 'Score calculated successfully.'});
   } catch (err) {
@@ -214,3 +235,69 @@ module.exports.persistIVCScores = persistScores;
 
 /** @type {Function} Persists IEG assessment scores. */
 module.exports.persistSATScores = persistScores;
+
+/**
+ * Retrieves all assessment scores for all companies.
+ * @param {Object} store - Data access layer with score retrieval methods.
+ * @returns {Function} Express route handler that handles the request and response.
+ */
+module.exports.getAllScores = (store) => async (req, res) => {
+  try {
+    const cycleId = req.query['cycle-id'];
+    const type = req.query['type'];
+
+    if (!cycleId) {
+      return res.status(400).json({ message: "'cycle-id' is required." });
+    }
+
+    const scores = await store.getAllAssessmentScores(cycleId, type);
+    return res.json(scores);
+  } catch (err) {
+    const message = 'Failed to retrieve all scores.';
+    console.error(err, message);
+    res.status(500).json({ message });
+  }
+};
+
+/**
+ * Retrieves SAT variance per company for a given cycle.
+ * @param {Object} store - Data access layer with score retrieval/variance methods.
+ * @returns {Function} Express route handler.
+ */
+module.exports.getSATVariance = (store) => async (req, res) => {
+  try {
+    const cycleId = req.query['cycle-id'];
+    if (!cycleId) {
+      return res.status(400).json({ message: "'cycle-id' is required." });
+    }
+    const varianceData = await store.getSATVarianceByCompany(cycleId);
+    return res.json(varianceData);
+  } catch (err) {
+    const message = 'Failed to retrieve SAT variance.';
+    console.error(err, message);
+    res.status(500).json({ message });
+  }
+};
+
+/**
+ * Retrieves the 4PG ranking for all companies for a given cycle.
+ * @param {Object} store - Data access layer with 4PG ranking retrieval method.
+ * @returns {Function} Express route handler.
+ */
+module.exports.getAll4PGRanking = (store) => async (req, res) => {
+  try {
+    const cycleId = req.query['cycle-id'];
+
+    if (!cycleId) {
+      return res.status(400).json({ message: "'cycle-id' is required." });
+    }
+
+    const rankingData = await store.getAll4PGRanking(cycleId);
+
+    return res.json(rankingData);
+  } catch (err) {
+    const message = 'Failed to retrieve 4PG ranking.';
+    console.error(err, message);
+    res.status(500).json({ message });
+  }
+};

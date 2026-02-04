@@ -1,5 +1,15 @@
 {
   "projects": {
-    "default": "technoserve-mfi"
-  }
+    "default": "ignite-program"
+  },
+  "targets": {
+    "ignite-program": {
+      "hosting": {
+        "mfi": [
+          "ignite-program"
+        ]
+      }
+    }
+  },
+  "etags": {}
 }

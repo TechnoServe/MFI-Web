@@ -168,7 +168,7 @@ const IndustryExpertScores = ({score, company, cycle}) => {
    * @returns {Array} A deduplicated array of score objects.
    */
   const unique = function getUniqueListBy(score, key) {
-    return [...new Map(score.map((item) => [item.category[key], item])).values()];
+    return [...new Map(score?.map((item) => [item.category[key], item])).values()];
   };
 
   const arr1 = unique(score, 'description');

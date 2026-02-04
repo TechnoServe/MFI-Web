@@ -15,11 +15,11 @@ const AuthenticatedCompany = () => {
   return (
     <BrowserRouter>
       <Switch>
-        // Renders the sidebar layout for all company routes
+        {/* // Renders the sidebar layout for all company routes */}
         <Route path={COMPANY}>
           <SideBar />
         </Route>
-        // Redirects any undefined route to the company dashboard
+        {/* // Redirects any undefined route to the company dashboard */}
         <Redirect from="/*" to={`${COMPANY}/${DASHBOARD}`} />
       </Switch>
     </BrowserRouter>

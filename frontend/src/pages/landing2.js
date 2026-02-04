@@ -4,7 +4,7 @@ import {Link} from 'react-router-dom';
 import logo from 'assets/images/I-Logo-Placeholder-white.svg';
 // import PieChart from './admin/dashboard/component/pie-chart';
 import PublicPieChart from '../pages/public-pie';
-import Performance from './admin/dashboard/component/performance';
+// import Performance from './admin/dashboard/component/performance';
 import {Text, Flex} from '@chakra-ui/react';
 import 'styles/normalize.css';
 import 'styles/webflow.css';
@@ -32,11 +32,12 @@ import sunolaOil from 'assets/company_images/sunola.jpg';
 import applePears from 'assets/company_images/appleandpears.jpg';
 // import bua from 'assets/company_images/bua.png';
 import golden from 'assets/company_images/golden.png';
-
+import lifeflour from 'assets/images/lifeflour.png';
+import buafoods from 'assets/images/buafoods.png';
+import boram from 'assets/images/boram.png';
 import {request} from 'common';
 // import Loader from 'components/circular-loader';
-import {Spinner} from '@chakra-ui/react';
-import MFICOY from '../Dummie/mfiScoreSheet';
+// import {Spinner} from '@chakra-ui/react';
 // import ProgressChart from './admin/dashboard/component/progress-chart';
 import wasil from 'assets/images/wasil-png.png';
 
@@ -82,25 +83,136 @@ const Page = () => {
   }, []);
 
 
-  const ranks = MFICOY.sort(function (a, b) {
-    return b.overallScore - a.overallScore;
-  });
-
-  ranks.forEach(function (player, i, arr) {
-    player.rank = i === 0 || player.overallScore != arr[i - 1].overallScore
-      ? i + 1
-      : arr[i - 1].rank;
-  });
-
-
-  const topBrands = [...ranks].sort((a, b) => b - a).slice(0, 14);
+  // Updated: Each company may have multiple brands under "brands" array
+  const ranks = [
+    {
+      brands: ['Golden Penny Prime Flour', 'Golden Penny Confectionary Flour', 'Classic All Purpose', 'Superfine wheat flour'],
+      company: 'Flour Mills of Nigeria Plc',
+      overallScore: 93.00,
+      logo: flourMills
+    },
+    {
+      brands: ['Mamador Pure Vegetable Oil'],
+      company: 'PZ Wilmar',
+      overallScore: 92.60,
+      logo: pzwilmar
+    },
+    {
+      brands: ['Power Oil', 'Emperor Vegetable Oil'],
+      company: 'Raffles Oil LFTZ Enterprises',
+      overallScore: 93.00,
+      logo: raffles
+    },
+    {
+      brands: ['Mama Gold Flour', 'Dangote Bread Flour', 'Bakewell Flour'],
+      company: 'Crown Flour Mills LTD (OLAM)',
+      overallScore: 89.80,
+      logo: crown
+    },
+    {
+      brands: ['Golden Terra'],
+      company: 'WASIL Ltd',
+      overallScore: 89.00,
+      logo: wasil
+    },
+    {
+      brands: ['Dangote Sugar'],
+      company: 'Dangote Sugar Refinery Plc',
+      overallScore: 86.00,
+      logo: dangote
+    },
+    {
+      brands: ['Mix & Bake Flour'],
+      company: 'Crown Flour Mills LTD (OLAM)',
+      overallScore: 81.80,
+      logo: crown
+    },
+    {
+      brands: ['Sunola Soya Oil'],
+      company: 'Sunola Foods Ltd',
+      overallScore: 78.20,
+      logo: sunolaOil
+    },
+    {
+      brands: ['Maikwabo'],
+      company: 'Flour Mills of Nigeria Plc',
+      overallScore: 76.00,
+      logo: flourMills
+    },
+    {
+      brands: ['Golden Penny Sugar'],
+      company: 'Golden Sugar Company Ltd',
+      overallScore: 75.20,
+      logo: golden
+    },
+    {
+      brands: ['Laziz Pure Vegetable Oil', 'Active Premium Vegetable Oil'],
+      company: 'Apple and Pears LTD',
+      overallScore: 73.20,
+      logo: applePears
+    },
+    {
+      brands: ['Happy Bake Flour', 'Royal Bake Wheat Flour', 'Diamond D\'Lite'],
+      company: 'Dufil Prima Foods PLC',
+      overallScore: 72.80,
+      logo: dufil
+    },
+    {
+      brands: ['Winner Pure Soya Oil'],
+      company: 'Apple and Pears LTD',
+      overallScore: 63.20,
+      logo: applePears
+    },
+    {
+      brands: ['Sunola Sugar'],
+      company: 'Sunola Foods Ltd',
+      overallScore: 58.20,
+      logo: sunolaOil
+    },
+    {
+      brands: ['Life wheat flour'],
+      company: 'Life Flour Mills Ltd',
+      overallScore: 49.80,
+      logo: lifeflour
+    },
+    {
+      brands: ['BUA Premium Refined Sugar'],
+      company: 'BUA Sugar Refinery Ltd',
+      overallScore: 36.00,
+      logo: buafoods
+    },
+    {
+      brands: ['Grand Pure Soya Oil'],
+      company: 'Grand Cereals Ltd',
+      overallScore: 35.80,
+      logo: grandCereal
+    },
+    {
+      brands: ['Golden Penny Pure Soya Oil', 'Golden Penny Pure Vegetable Oil'],
+      company: 'Premium Edible Oils LTD',
+      overallScore: 35.20,
+      logo: premiumEdibleOil
+    },
+    {
+      brands: ['Activa Pure Vegetable Oil'],
+      company: 'Golden Oil Industries Ltd',
+      overallScore: 35.20,
+      logo: golden
+    },
+    {
+      brands: ['BOW Soya Pure Oil'],
+      company: 'BORAM Foods Ltd',
+      overallScore: 27.00,
+      logo: boram
+    },
+  ];
   // const result = topBrands.reduce(function (r, a) {
   //   r[a.companyName] = r[a.companyName] || [];
   //   r[a.companyName].push(a);
   //   return r;
   // }, Object.create(null));
 
-  console.log('topBrands', topBrands);
+  // console.log('topBrands', topBrands);
   //   var topValues = [...result].sort((a,b) => b-a).slice(0,5);
   // // [...values] will create shallow copy
   // console.log(topValues);
@@ -163,7 +275,7 @@ const Page = () => {
               /> */}
             <ReactToPrint
               trigger={() => {
-                return <button className="button-secondary on-image w-button" download>
+                return <button className="button-secondary on-image w-button">
                   Download now
                 </button>;
               }}
@@ -193,7 +305,7 @@ const Page = () => {
                     fontSize="44px"
                     fontWeight="700"
                   >
-                    {(spinning && <Spinner />) || brandList}
+                    32
 
                   </Text>
                   {/*
@@ -252,7 +364,7 @@ const Page = () => {
                     fontSize="44px"
                     fontWeight="700"
                   >
-                    75.3%
+                    72.9%
                   </Text>
 
                   {/*
@@ -289,808 +401,46 @@ const Page = () => {
                   </div>
 
 
-                  <>
-                    {/* one */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>1</h5>
-                        <img
-                          src={crown}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                    Crown Flour Mills LTD (OLAM)
-                          </div>
+                  {ranks.map((item, index) => (
+                    <React.Fragment key={index}>
+                      <div className="flex-row-middle flex-space-between padding-2 width-full">
+                        <div className="flex-row margin-right-4 flex-row-middle">
+                          <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>{index + 1}</h5>
+                          <img
+                            src={item.logo}
+                            loading="lazy"
+                            alt=""
+                            className="margin-right-4 w-12 h-12 rounded-full"
+                            style={{objectFit: 'contain'}}
+                          />
+                          <Flex flexDirection="column">
+                            <div className="text-small weight-high" style={{fontWeight: 'bold'}}>
+                              {item.company}
+                            </div>
+                          </Flex>
+                        </div>
+                      </div>
+
+                      <div
+                        className="flex-row-middle flex-space-between padding-2 width-full"
+                        style={{paddingLeft: '102px', paddingRight: '26px'}}
+                      >
+                        <Flex flexDirection="column">
+                          {item.brands.map((brandName, brandIndex) => (
+                            <div key={brandIndex} className="text-small weight-medium">
+                              {brandName}
+                            </div>
+                          ))}
                         </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                    Mama Gold
+                        <div className="height-2 rounded-full background-hover width-6-12">
+                          <div
+                            className="height-2 rounded-full width-2-3"
+                            style={{background: '#00b37a', width: `${item.overallScore}%`}}
+                          ></div>
                         </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `95.8%`}}
-                        ></div>
                       </div>
-                    </div>
-
-                    {/* two */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>2</h5>
-                        <img
-                          src={flourMills}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                    Flour Mills of Nigeria Plc
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                  Golden Penny Confectionary Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `95%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                  Eagle Wheat Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `95%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* three */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>3</h5>
-                        <img
-                          src={raffles}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                    Raffles Oil LFTZ Enterprises
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                    Power Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `94.8%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                  Emperor Vegetable Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `94.8%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* four */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>4</h5>
-                        <img
-                          src={dangote}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                    Dangote Sugar Refinery Plc
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                  Dangote Sugar
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `93%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* five */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>5</h5>
-                        <img
-                          src={crown}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                    Crown Flour Mills LTD (OLAM)
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                  Mix & Bake Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `89.8%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* six */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>6</h5>
-                        <img
-                          src={pzwilmar}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          PZ Wilmar
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Mamador Pure Vegetable Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `89.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* seven */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>7</h5>
-                        <img
-                          src={flourMills}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Flour Mills of Nigeria PLC
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Classic All Purpose
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `89%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* eight */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>8</h5>
-                        <img
-                          src={crown}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Crown Flour Mills LTD (OLAM)
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Dangote Bread Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `85.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        All Purpose Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `85.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Bakewell Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `85.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* nine */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>9</h5>
-                        <img
-                          src={dufil}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                    Dufil Prima Foods PLC
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Diamond D`&apos;Lite
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `84.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Happy Bake Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `84.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* ten */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>10</h5>
-                        <img
-                          src={premiumEdibleOil}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Premium Edible Oils LTD
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Golden Penny Pure Soya Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `82.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Golden Penny Pure Vegetable Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `82.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* eleven */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>11</h5>
-                        <img
-                          src={dufil}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Dufil Prima Foods PLC
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Royal Bake Wheat Flour
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `81.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* twelve */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>12</h5>
-                        <img
-                          src={applePears}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Apple and Pears LTD
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Laziz Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `79.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Winner Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `79.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Active Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `79.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* thirteen */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>13</h5>
-                        <img
-                          src={pzwilmar}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          PZ Wilmar
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Devon King&apos;s Pure Vegetable Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `79.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    {/* 14 */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>14</h5>
-                        <img
-                          src={wasil}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          WASIL LTD
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Golden Terra
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `79.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    {/* 14 */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>15</h5>
-                        <img
-                          src={golden}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Golden Sugar Company Ltd
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Golden Penny Sugar
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `78.4%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* 15 */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>16</h5>
-                        <img
-                          src={golden}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Golden Oil Industries LTD
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Activa Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `76.4%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-
-                    {/* 16 */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>17</h5>
-                        <img
-                          src={sunolaOil}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Sunola Foods LTD
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Sunola Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `75.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Sunola Sugar
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `75.6%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-                    {/* 17 */}
-                    <div className="flex-row-middle flex-space-between padding-2  width-full">
-                      <div className="flex-row margin-right-4 flex-row-middle">
-                        <h5 style={{paddingRight: '16px', fontWeight: 'bold'}}>18</h5>
-                        <img
-                          src={grandCereal}
-                          loading="lazy"
-                          alt=""
-                          className="margin-right-4 w-12 h-12 rounded-full"
-                          style={{objectFit: 'contain'}}
-                        />
-                        <Flex
-                          flexDirection="column"
-                        >
-                          <div className="text-small weight-high" style={{fontWeight: 'bold'}} >
-                          Grand Cereals Ltd
-                          </div>
-                        </Flex>
-                      </div>
-                    </div>
-
-                    <div className="flex-row-middle flex-space-between padding-2  width-full" style={{paddingLeft: '102px', paddingRight: '26px'}}>
-                      <Flex
-                        flexDirection="column"
-                      >
-                        <div className="text-small weight-medium">
-                        Grand Pure Soya Oil
-                        </div>
-                      </Flex>
-                      <div className="height-2 rounded-full background-hover width-6-12">
-                        <div
-                          className="height-2 rounded-full width-2-3"
-                          style={{background: '#00b37a', width: `75.2%`}}
-                        ></div>
-                      </div>
-                    </div>
-
-
-                  </>
+                    </React.Fragment>
+                  ))}
 
 
                 </div>
@@ -1098,9 +448,9 @@ const Page = () => {
             </Flex>
           </div>
 
-          <div className="container-1280 margin-bottom-10 wf-section">
+          {/* <div className="container-1280 margin-bottom-10 wf-section">
             <Performance name={'MFI Brands - Performance by Fortified Staple Food Vehicle'} />
-          </div>
+          </div> */}
           <div className="container-1280 margin-bottom-10 wf-section">
             <div className="footer-cta-background">
               <div className="width-1-2 flex-column-centered portrait-width-full tablet-width-9-12">

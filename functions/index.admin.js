@@ -13,7 +13,7 @@ module.exports.getFirebaseAdmin = () => {
   if (admin.apps.length === 0) {
     admin.initializeApp({
       credential: admin.credential.cert(serviceAccount),
-      storageBucket: process.env.PROJECT_ID + '.appspot.com',
+      storageBucket: process.env.PROJECT_ID + '.firebasestorage.app',
     });
   }
   // Return the initialized admin instance

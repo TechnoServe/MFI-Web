@@ -10,12 +10,13 @@ import AdminSelfAssessment from 'pages/admin/self-assessment';
 import axios from 'axios';
 // import Companies from 'pages/admin/company-list';
 import Dashboard from 'pages/company/dashboard';
-import AdminDashboard from 'pages/admin/dashboard';
+// import AdminDashboard from 'pages/admin/dashboard';
+import AdminDashboardV2 from 'pages/admin/dashboard-v2';
 import IvcAssessment from 'pages/ivc/self-assessment';
 
 /**
  * Creates a configured Axios instance for making HTTP requests to the backend API.
- * Automatically adds an Authorization header if `secure` is true.
+ * Automatically adds an Authorization header (Bearer token) if `secure` is true.
  * Includes an interceptor to handle 401 Unauthorized responses.
  *
  * @param {boolean} secure - Whether to include the Authorization token from sessionStorage.
@@ -24,29 +25,41 @@ import IvcAssessment from 'pages/ivc/self-assessment';
 export function request(secure = false) {
   // const toast = useToast();
 
-  let headers = {
+  const headers = {
     'Accept': 'application/json, text/plain,*/*',
     'Content-Type': 'application/json',
   };
-
-  // If secure mode is enabled, attach the auth token to headers
-  if (secure) {
-    headers = {
-      ...headers,
-      authorization: `Bearer ${sessionStorage.getItem('auth-token')}`,
-    };
-  }
 
   const instance = axios.create({
     baseURL: '/api/v1',
     headers,
   });
 
+  // Attach Authorization header for secure requests
+  instance.interceptors.request.use(
+    (config) => {
+      if (secure) {
+        const token =
+          sessionStorage.getItem('auth-token') ||
+          sessionStorage.getItem('token') ||
+          localStorage.getItem('auth-token') ||
+          localStorage.getItem('token');
+
+        if (token) {
+          config.headers = config.headers || {};
+          config.headers.Authorization = `Bearer ${token}`;
+        }
+      }
+      return config;
+    },
+    (err) => Promise.reject(err)
+  );
+
   // Handle 401 errors globally for secure routes
   instance.interceptors.response.use(
     (res) => res,
     (err) => {
-      if (secure && err.response.status == 401) {
+      if (secure && err.response && err.response.status == 401) {
         // sessionStorage.removeItem('auth-token');
         // sessionStorage.removeItem('auth-token');
       }
@@ -88,7 +101,7 @@ export const SUB_ROUTES = [
 
 // Routes and components available for admin users
 export const ADMIN_SUB_ROUTES = [
-  {path: DASHBOARD, page: AdminDashboard, exact: true},
+  {path: DASHBOARD, page: AdminDashboardV2, exact: true},
   {path: ADMIN_SELF_ASSESSMENT, page: AdminSelfAssessment, exact: true},
   {path: SETTINGS, page: AdminSettings, exact: true},
   {path: COMPANIES_INDEX, page: AdminCompanyIndex, exact: true},

@@ -8,8 +8,8 @@ import ComingSoon from 'components/coming-soon';
 import {Flex, Stack} from '@chakra-ui/react';
 
 const assessmentRoute = [
-  { path: '', exact: true, page: Home },
-  { path: 'hello', exact: true, page: ComingSoon },
+  {path: '', exact: true, page: Home},
+  {path: 'hello', exact: true, page: ComingSoon},
 ];
 /**
  * Renders the self-assessment admin page layout including sidebar categories
